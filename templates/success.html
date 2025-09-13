@@ -79,7 +79,7 @@
             <i class="fas fa-exclamation-triangle"></i> Important Notes
         </h4>
         <ul style="color: #856404; line-height: 1.8;">
-            <li>Please save your Student ID: <strong>NIELIT{{ student_data.student_id|string.zfill(6) }}</strong> for future reference.</li>
+            <li>Please save your Student ID: <strong>NIELIT{{ "%06d"|format(student_data.student_id) }}</strong> for future reference.</li>
             <li>You will receive a confirmation email at <strong>{{ student_data.email }}</strong> within 24 hours.</li>
             <li>Contact the NIELIT center for payment details and document requirements.</li>
             <li>Course schedules will be communicated via email and SMS.</li>
