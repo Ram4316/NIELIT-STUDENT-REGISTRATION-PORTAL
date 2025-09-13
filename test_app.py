@@ -17,14 +17,19 @@ DB_PORT = os.environ.get('DB_PORT', '5432')
 
 def get_db_connection():
     try:
-        return psycopg2.connect(
-            host=DB_HOST,
-            user=DB_USER,
-            password=DB_PASSWORD,
-            database=DB_NAME,
-            port=DB_PORT,
-            cursor_factory=RealDictCursor
-        )
+        # Use Railway's DATABASE_URL if available, otherwise use individual parameters
+        database_url = os.environ.get('DATABASE_URL')
+        if database_url:
+            return psycopg2.connect(database_url, cursor_factory=RealDictCursor)
+        else:
+            return psycopg2.connect(
+                host=DB_HOST,
+                user=DB_USER,
+                password=DB_PASSWORD,
+                database=DB_NAME,
+                port=DB_PORT,
+                cursor_factory=RealDictCursor
+            )
     except Exception as e:
         print(f"Database connection failed: {e}")
         return None
