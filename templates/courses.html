@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Available Courses - NIELIT Portal{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h2><i class="fas fa-book"></i> Available Courses</h2>
+    <p>Explore our comprehensive range of computer education programs</p>
+</div>
+
+<div class="content-body">
+    {% if courses %}
+    <div class="course-grid">
+        {% for course in courses %}
+        <div class="course-card">
+            <div class="course-code">{{ course.course_code }}</div>
+            <h3>{{ course.title }}</h3>
+            {% if course.description %}
+            <p style="margin-bottom: 1rem; color: #666; line-height: 1.6;">{{ course.description }}</p>
+            {% endif %}
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0;">
+                <div style="text-align: center; padding: 0.75rem; background-color: #f8f9fa; border-radius: 5px;">
+                    <i class="fas fa-clock" style="color: #ff6b35; margin-bottom: 0.5rem;"></i>
+                    <div style="font-size: 0.9rem; color: #666;">Duration</div>
+                    <div style="font-weight: 600; color: #213047;">{{ course.duration_months }} months</div>
+                </div>
+                <div style="text-align: center; padding: 0.75rem; background-color: #f8f9fa; border-radius: 5px;">
+                    <i class="fas fa-rupee-sign" style="color: #ff6b35; margin-bottom: 0.5rem;"></i>
+                    <div style="font-size: 0.9rem; color: #666;">Course Fee</div>
+                    <div style="font-weight: 600; color: #213047;">₹{{ course.fee }}</div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 1rem;">
+                <a href="{{ url_for('register') }}" class="btn" style="width: 100%; text-align: center;">
+                    <i class="fas fa-user-plus"></i> Enroll Now
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 3rem; background-color: #f8f9fa; border-radius: 10px;">
+        <i class="fas fa-book-open" style="font-size: 3rem; color: #6c757d; margin-bottom: 1rem;"></i>
+        <h3 style="color: #6c757d; margin-bottom: 1rem;">No Courses Available</h3>
+        <p style="color: #6c757d; margin-bottom: 2rem;">We're currently updating our course catalog. Please check back later.</p>
+        <a href="{{ url_for('index') }}" class="btn">
+            <i class="fas fa-home"></i> Back to Home
+        </a>
+    </div>
+    {% endif %}
+
+    <div style="background-color: #e8f4f8; padding: 2rem; border-radius: 10px; margin-top: 3rem;">
+        <h3 style="color: #213047; margin-bottom: 1.5rem; text-align: center;">
+            <i class="fas fa-info-circle"></i> Course Information
+        </h3>
+        
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+            <div>
+                <h4 style="color: #213047; margin-bottom: 1rem;">
+                    <i class="fas fa-graduation-cap"></i> Eligibility Criteria
+                </h4>
+                <ul style="color: #666; line-height: 1.8;">
+                    <li>Basic computer knowledge for advanced courses</li>
+                    <li>Minimum 10th pass for most courses</li>
+                    <li>Valid government ID proof required</li>
+                    <li>Age limit: 14-60 years</li>
+                </ul>
+            </div>
+            
+            <div>
+                <h4 style="color: #213047; margin-bottom: 1rem;">
+                    <i class="fas fa-certificate"></i> Certification
+                </h4>
+                <ul style="color: #666; line-height: 1.8;">
+                    <li>Government recognized certificates</li>
+                    <li>Valid across India</li>
+                    <li>Industry accepted qualifications</li>
+                    <li>Lifetime validity</li>
+                </ul>
+            </div>
+            
+            <div>
+                <h4 style="color: #213047; margin-bottom: 1rem;">
+                    <i class="fas fa-users"></i> Learning Support
+                </h4>
+                <ul style="color: #666; line-height: 1.8;">
+                    <li>Experienced faculty members</li>
+                    <li>Practical hands-on training</li>
+                    <li>Study materials provided</li>
+                    <li>Doubt clearing sessions</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div style="background-color: #fff3cd; border: 1px solid #ffeaa7; padding: 1.5rem; border-radius: 10px; margin-top: 2rem;">
+        <h4 style="color: #856404; margin-bottom: 1rem;">
+            <i class="fas fa-exclamation-triangle"></i> Important Information
+        </h4>
+        <div style="color: #856404; line-height: 1.8;">
+            <p><strong>Course Fees:</strong> All fees are inclusive of study materials and examination charges.</p>
+            <p><strong>Payment Options:</strong> Cash, Demand Draft, or Online payment accepted.</p>
+            <p><strong>Refund Policy:</strong> Refunds are available within 7 days of enrollment, subject to terms and conditions.</p>
+            <p><strong>Batch Timings:</strong> Morning, Evening, and Weekend batches available based on course selection.</p>
+            <p><strong>Examination:</strong> Regular examinations conducted as per NIELIT guidelines.</p>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 3rem;">
+        <h3 style="color: #213047; margin-bottom: 1rem;">Ready to Start Your Learning Journey?</h3>
+        <p style="margin-bottom: 2rem; color: #666;">
+            Join thousands of successful students who have completed their computer education with NIELIT.
+        </p>
+        <a href="{{ url_for('register') }}" class="btn" style="font-size: 1.1rem; padding: 1rem 2rem;">
+            <i class="fas fa-user-plus"></i> Register Now
+        </a>
+        <a href="{{ url_for('index') }}" class="btn btn-secondary" style="margin-left: 1rem;">
+            <i class="fas fa-home"></i> Back to Home
+        </a>
+    </div>
+</div>
+{% endblock %}

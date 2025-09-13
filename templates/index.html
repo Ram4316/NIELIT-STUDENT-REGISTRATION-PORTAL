@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}NIELIT Student Registration Portal - Home{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h2><i class="fas fa-home"></i> Welcome to NIELIT Student Portal</h2>
+    <p>Your Gateway to Quality Computer Education</p>
+</div>
+
+<div class="content-body">
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <h3 style="color: #213047; margin-bottom: 1rem;">About NIELIT</h3>
+        <p style="font-size: 1.1rem; line-height: 1.8; color: #666; max-width: 800px; margin: 0 auto;">
+            The National Institute of Electronics and Information Technology (NIELIT) is an autonomous scientific society 
+            under the administrative control of the Ministry of Electronics & Information Technology (MeitY), 
+            Government of India. We provide quality education in computer science and information technology.
+        </p>
+    </div>
+
+    <div class="course-grid">
+        <div class="course-card">
+            <div class="course-code">CCC</div>
+            <h3>Course on Computer Concepts</h3>
+            <p>Basic computer literacy course covering fundamentals of computing, internet, and digital literacy.</p>
+            <div class="course-fee">₹500</div>
+        </div>
+
+        <div class="course-card">
+            <div class="course-code">O-Level</div>
+            <h3>O-Level Programming</h3>
+            <p>Foundation course in programming covering C, C++, and basic algorithms.</p>
+            <div class="course-fee">₹1,200</div>
+        </div>
+
+        <div class="course-card">
+            <div class="course-code">A-Level</div>
+            <h3>A-Level Advanced Programming</h3>
+            <p>Advanced programming course covering data structures, algorithms, and software engineering.</p>
+            <div class="course-fee">₹2,500</div>
+        </div>
+
+        <div class="course-card">
+            <div class="course-code">WEB-DESIGN</div>
+            <h3>Web Design & Development</h3>
+            <p>Complete web development course covering HTML, CSS, JavaScript, and PHP.</p>
+            <div class="course-fee">₹1,800</div>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 3rem;">
+        <h3 style="color: #213047; margin-bottom: 1rem;">Ready to Start Your Journey?</h3>
+        <p style="margin-bottom: 2rem; color: #666;">
+            Join thousands of students who have successfully completed their computer education with NIELIT.
+        </p>
+        <a href="{{ url_for('register') }}" class="btn">
+            <i class="fas fa-user-plus"></i> Register Now
+        </a>
+        <a href="{{ url_for('courses') }}" class="btn btn-secondary" style="margin-left: 1rem;">
+            <i class="fas fa-book"></i> View All Courses
+        </a>
+    </div>
+
+    <div style="background-color: #f8f9fa; padding: 2rem; border-radius: 10px; margin-top: 3rem;">
+        <h3 style="color: #213047; margin-bottom: 1rem; text-align: center;">Why Choose NIELIT?</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem; margin-top: 2rem;">
+            <div style="text-align: center;">
+                <i class="fas fa-certificate" style="font-size: 2rem; color: #ff6b35; margin-bottom: 1rem;"></i>
+                <h4>Government Certified</h4>
+                <p>All courses are government recognized and certified by NIELIT.</p>
+            </div>
+            <div style="text-align: center;">
+                <i class="fas fa-users" style="font-size: 2rem; color: #ff6b35; margin-bottom: 1rem;"></i>
+                <h4>Expert Faculty</h4>
+                <p>Learn from experienced and qualified instructors.</p>
+            </div>
+            <div style="text-align: center;">
+                <i class="fas fa-laptop-code" style="font-size: 2rem; color: #ff6b35; margin-bottom: 1rem;"></i>
+                <h4>Practical Learning</h4>
+                <p>Hands-on experience with latest technologies and tools.</p>
+            </div>
+            <div style="text-align: center;">
+                <i class="fas fa-briefcase" style="font-size: 2rem; color: #ff6b35; margin-bottom: 1rem;"></i>
+                <h4>Career Support</h4>
+                <p>Placement assistance and career guidance for students.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

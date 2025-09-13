@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Student Registration - NIELIT Portal{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <h2><i class="fas fa-user-plus"></i> Student Registration</h2>
+    <p>Fill out the form below to register for NIELIT courses</p>
+</div>
+
+<div class="content-body">
+    {% if errors %}
+    <div class="error-messages">
+        <h4><i class="fas fa-exclamation-triangle"></i> Please correct the following errors:</h4>
+        <ul>
+            {% for error in errors %}
+            <li>{{ error }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <form method="POST" action="{{ url_for('register') }}">
+        <h3 style="color: #213047; margin-bottom: 1.5rem; border-bottom: 2px solid #ff6b35; padding-bottom: 0.5rem;">
+            <i class="fas fa-user"></i> Personal Information
+        </h3>
+
+        <div class="form-group">
+            <label for="name">Full Name *</label>
+            <input type="text" id="name" name="name" required 
+                   value="{{ form_data.name if form_data else '' }}"
+                   placeholder="Enter your full name">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="email">Email Address *</label>
+                <input type="email" id="email" name="email" required 
+                       value="{{ form_data.email if form_data else '' }}"
+                       placeholder="example@email.com">
+            </div>
+            <div class="form-group">
+                <label for="phone">Mobile Number *</label>
+                <input type="tel" id="phone" name="phone" required 
+                       value="{{ form_data.phone if form_data else '' }}"
+                       placeholder="10-digit mobile number" maxlength="10">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="dob">Date of Birth *</label>
+            <input type="date" id="dob" name="dob" required 
+                   value="{{ form_data.dob if form_data else '' }}">
+        </div>
+
+        <div class="form-group">
+            <label for="address">Address *</label>
+            <textarea id="address" name="address" rows="3" required 
+                      placeholder="Enter your complete address">{{ form_data.address if form_data else '' }}</textarea>
+        </div>
+
+        <h3 style="color: #213047; margin: 2rem 0 1.5rem 0; border-bottom: 2px solid #ff6b35; padding-bottom: 0.5rem;">
+            <i class="fas fa-graduation-cap"></i> Educational Background
+        </h3>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="qualification">Current Qualification *</label>
+                <select id="qualification" name="qualification" required>
+                    <option value="">Select your current qualification</option>
+                    <option value="10th Pass" {% if form_data and form_data.qualification == '10th Pass' %}selected{% endif %}>10th Pass</option>
+                    <option value="12th Pass" {% if form_data and form_data.qualification == '12th Pass' %}selected{% endif %}>12th Pass</option>
+                    <option value="Diploma" {% if form_data and form_data.qualification == 'Diploma' %}selected{% endif %}>Diploma</option>
+                    <option value="Graduate" {% if form_data and form_data.qualification == 'Graduate' %}selected{% endif %}>Graduate</option>
+                    <option value="Post Graduate" {% if form_data and form_data.qualification == 'Post Graduate' %}selected{% endif %}>Post Graduate</option>
+                    <option value="Other" {% if form_data and form_data.qualification == 'Other' %}selected{% endif %}>Other</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="highest_qualification">Highest Qualification *</label>
+                <select id="highest_qualification" name="highest_qualification" required>
+                    <option value="">Select your highest qualification</option>
+                    <option value="10th Pass" {% if form_data and form_data.highest_qualification == '10th Pass' %}selected{% endif %}>10th Pass</option>
+                    <option value="12th Pass" {% if form_data and form_data.highest_qualification == '12th Pass' %}selected{% endif %}>12th Pass</option>
+                    <option value="Diploma" {% if form_data and form_data.highest_qualification == 'Diploma' %}selected{% endif %}>Diploma</option>
+                    <option value="Graduate" {% if form_data and form_data.highest_qualification == 'Graduate' %}selected{% endif %}>Graduate</option>
+                    <option value="Post Graduate" {% if form_data and form_data.highest_qualification == 'Post Graduate' %}selected{% endif %}>Post Graduate</option>
+                    <option value="Other" {% if form_data and form_data.highest_qualification == 'Other' %}selected{% endif %}>Other</option>
+                </select>
+            </div>
+        </div>
+
+        <h3 style="color: #213047; margin: 2rem 0 1.5rem 0; border-bottom: 2px solid #ff6b35; padding-bottom: 0.5rem;">
+            <i class="fas fa-book"></i> Course Selection
+        </h3>
+
+        <p style="margin-bottom: 1rem; color: #666;">
+            Select one or more courses you wish to enroll in. You can select multiple courses.
+        </p>
+
+        {% if courses %}
+        <div class="checkbox-group">
+            {% for course in courses %}
+            <div class="checkbox-item">
+                <input type="checkbox" id="course_{{ course.course_id }}" name="courses" value="{{ course.course_id }}"
+                       {% if form_data and form_data.courses and course.course_id|string in form_data.courses %}checked{% endif %}>
+                <div class="course-info">
+                    <h4>{{ course.title }}</h4>
+                    <p><strong>Code:</strong> {{ course.course_code }}</p>
+                    <p><strong>Duration:</strong> {{ course.duration_months }} months</p>
+                    {% if course.description %}
+                    <p><strong>Description:</strong> {{ course.description[:100] }}{% if course.description|length > 100 %}...{% endif %}</p>
+                    {% endif %}
+                    <div class="course-fee">Fee: ₹{{ course.fee }}</div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 5px; text-align: center;">
+            <i class="fas fa-exclamation-triangle"></i> No courses available at the moment. Please try again later.
+        </div>
+        {% endif %}
+
+        <div style="text-align: center; margin-top: 3rem;">
+            <button type="submit" class="btn" style="font-size: 1.1rem; padding: 1rem 3rem;">
+                <i class="fas fa-paper-plane"></i> Submit Registration
+            </button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary" style="margin-left: 1rem;">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </form>
+
+    <div style="background-color: #e8f4f8; padding: 1.5rem; border-radius: 10px; margin-top: 3rem;">
+        <h4 style="color: #213047; margin-bottom: 1rem;">
+            <i class="fas fa-info-circle"></i> Important Information
+        </h4>
+        <ul style="color: #666; line-height: 1.8;">
+            <li>All fields marked with (*) are mandatory.</li>
+            <li>Please ensure your email address is correct as it will be used for communication.</li>
+            <li>Mobile number should be a valid 10-digit Indian mobile number.</li>
+            <li>You can select multiple courses during registration.</li>
+            <li>Course fees are subject to change. Please confirm the current fees at the time of admission.</li>
+            <li>After successful registration, you will receive a confirmation email with further instructions.</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
