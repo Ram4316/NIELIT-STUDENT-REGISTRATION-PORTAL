@@ -24,10 +24,10 @@
             <div>
                 <h4 style="color: #213047; margin-bottom: 1rem;">Personal Information</h4>
                 <div style="background: white; padding: 1.5rem; border-radius: 8px; border-left: 4px solid #ff6b35;">
-                    <p><strong>Student ID:</strong> NIELIT{{ student_data.student_id|string.zfill(6) }}</p>
+                    <p><strong>Student ID:</strong> NIELIT{{ "%06d"|format(student_data.student_id) }}</p>
                     <p><strong>Name:</strong> {{ student_data.name }}</p>
                     <p><strong>Email:</strong> {{ student_data.email }}</p>
-                    <p><strong>Registration Date:</strong> {{ moment().format('DD/MM/YYYY') }}</p>
+                    <p><strong>Registration Date:</strong> {{ student_data.registration_date }}</p>
                 </div>
             </div>
             

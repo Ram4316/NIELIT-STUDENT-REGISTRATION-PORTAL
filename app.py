@@ -17,16 +17,16 @@ DB_PORT = os.environ.get('DB_PORT', '5432')
 
 # Demo courses data (fallback when database is not available)
 DEMO_COURSES = [
-    {'course_id': 1, 'course_code': 'CCC', 'title': 'Course on Computer Concepts', 'description': 'Basic computer literacy course', 'duration_months': 3, 'fee': 5000, 'is_active': 1},
-    {'course_id': 2, 'course_code': 'O Level', 'title': 'O Level Programming', 'description': 'Programming fundamentals', 'duration_months': 6, 'fee': 12000, 'is_active': 1},
-    {'course_id': 3, 'course_code': 'A Level', 'title': 'A Level Programming', 'description': 'Advanced programming concepts', 'duration_months': 12, 'fee': 25000, 'is_active': 1},
-    {'course_id': 4, 'course_code': 'BCC', 'title': 'Basic Computer Course', 'description': 'Introduction to computers', 'duration_months': 2, 'fee': 3000, 'is_active': 1},
-    {'course_id': 5, 'course_code': 'DCA', 'title': 'Diploma in Computer Applications', 'description': 'Comprehensive computer applications', 'duration_months': 6, 'fee': 15000, 'is_active': 1},
-    {'course_id': 6, 'course_code': 'PGDCA', 'title': 'Post Graduate Diploma in Computer Applications', 'description': 'Advanced computer applications', 'duration_months': 12, 'fee': 30000, 'is_active': 1},
-    {'course_id': 7, 'course_code': 'DTP', 'title': 'Desktop Publishing', 'description': 'Design and publishing software', 'duration_months': 3, 'fee': 8000, 'is_active': 1},
-    {'course_id': 8, 'course_code': 'TALLY', 'title': 'Tally ERP 9', 'description': 'Accounting software training', 'duration_months': 2, 'fee': 6000, 'is_active': 1},
-    {'course_id': 9, 'course_code': 'WEB', 'title': 'Web Development', 'description': 'HTML, CSS, JavaScript, PHP', 'duration_months': 6, 'fee': 18000, 'is_active': 1},
-    {'course_id': 10, 'course_code': 'PYTHON', 'title': 'Python Programming', 'description': 'Python programming language', 'duration_months': 4, 'fee': 12000, 'is_active': 1}
+    {'course_code': 'CCC', 'title': 'Course on Computer Concepts', 'description': 'Basic computer literacy course', 'duration_months': 3, 'fee': 5000, 'is_active': True},
+    {'course_code': 'O Level', 'title': 'O Level Programming', 'description': 'Programming fundamentals', 'duration_months': 6, 'fee': 12000, 'is_active': True},
+    {'course_code': 'A Level', 'title': 'A Level Programming', 'description': 'Advanced programming concepts', 'duration_months': 12, 'fee': 25000, 'is_active': True},
+    {'course_code': 'BCC', 'title': 'Basic Computer Course', 'description': 'Introduction to computers', 'duration_months': 2, 'fee': 3000, 'is_active': True},
+    {'course_code': 'DCA', 'title': 'Diploma in Computer Applications', 'description': 'Comprehensive computer applications', 'duration_months': 6, 'fee': 15000, 'is_active': True},
+    {'course_code': 'PGDCA', 'title': 'Post Graduate Diploma in Computer Applications', 'description': 'Advanced computer applications', 'duration_months': 12, 'fee': 30000, 'is_active': True},
+    {'course_code': 'DTP', 'title': 'Desktop Publishing', 'description': 'Design and publishing software', 'duration_months': 3, 'fee': 8000, 'is_active': True},
+    {'course_code': 'TALLY', 'title': 'Tally ERP 9', 'description': 'Accounting software training', 'duration_months': 2, 'fee': 6000, 'is_active': True},
+    {'course_code': 'WEB', 'title': 'Web Development', 'description': 'HTML, CSS, JavaScript, PHP', 'duration_months': 6, 'fee': 18000, 'is_active': True},
+    {'course_code': 'PYTHON', 'title': 'Python Programming', 'description': 'Python programming language', 'duration_months': 4, 'fee': 12000, 'is_active': True}
 ]
 
 def get_db_connection():
@@ -109,11 +109,11 @@ def register():
                     student_id = cursor.fetchone()['student_id']
                     
                     # Insert student courses
-                    for course_id in selected_courses:
+                    for course_code in selected_courses:
                         cursor.execute("""
-                            INSERT INTO student_courses (student_id, course_id, enrollment_date)
+                            INSERT INTO student_courses (student_id, course_code, registration_date)
                             VALUES (%s, %s, %s)
-                        """, (student_id, course_id, datetime.now()))
+                        """, (student_id, course_code, datetime.now()))
                     
                     connection.commit()
                     connection.close()
@@ -186,20 +186,20 @@ def success():
     if connection:
         try:
             with connection.cursor() as cursor:
-                course_ids = success_data['courses']
-                if course_ids:
-                    placeholders = ','.join(['%s'] * len(course_ids))
-                    cursor.execute(f"SELECT * FROM courses WHERE course_id IN ({placeholders})", course_ids)
+                course_codes = success_data['courses']
+                if course_codes:
+                    placeholders = ','.join(['%s'] * len(course_codes))
+                    cursor.execute(f"SELECT * FROM courses WHERE course_code IN ({placeholders})", course_codes)
                     courses = cursor.fetchall()
                 else:
                     courses = []
                 connection.close()
         except Exception as e:
             # Fallback to demo courses
-            courses = [course for course in DEMO_COURSES if str(course['course_id']) in success_data['courses']]
+            courses = [course for course in DEMO_COURSES if course['course_code'] in success_data['courses']]
     else:
         # Demo mode
-        courses = [course for course in DEMO_COURSES if str(course['course_id']) in success_data['courses']]
+        courses = [course for course in DEMO_COURSES if course['course_code'] in success_data['courses']]
     
     return render_template('success.html',
                          student_data=success_data,
