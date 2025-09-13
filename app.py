@@ -9,11 +9,23 @@ app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-here')
 
 # Database configuration for PostgreSQL
-DB_HOST = os.environ.get('DB_HOST', 'localhost')
-DB_USER = os.environ.get('DB_USER', 'postgres')
-DB_PASSWORD = os.environ.get('DB_PASSWORD', '')
-DB_NAME = os.environ.get('DB_NAME', 'nielit_portal')
-DB_PORT = os.environ.get('DB_PORT', '5432')
+DATABASE_URL = os.environ.get('DATABASE_URL')
+if DATABASE_URL:
+    # Parse DATABASE_URL for Railway
+    import urllib.parse
+    parsed = urllib.parse.urlparse(DATABASE_URL)
+    DB_HOST = parsed.hostname
+    DB_USER = parsed.username
+    DB_PASSWORD = parsed.password
+    DB_NAME = parsed.path[1:]  # Remove leading slash
+    DB_PORT = parsed.port
+else:
+    # Fallback for local development
+    DB_HOST = os.environ.get('DB_HOST', 'localhost')
+    DB_USER = os.environ.get('DB_USER', 'postgres')
+    DB_PASSWORD = os.environ.get('DB_PASSWORD', '')
+    DB_NAME = os.environ.get('DB_NAME', 'nielit_portal')
+    DB_PORT = os.environ.get('DB_PORT', '5432')
 
 # Demo courses data (fallback when database is not available)
 DEMO_COURSES = [
@@ -31,19 +43,14 @@ DEMO_COURSES = [
 
 def get_db_connection():
     try:
-        # Use Railway's DATABASE_URL if available, otherwise use individual parameters
-        database_url = os.environ.get('DATABASE_URL')
-        if database_url:
-            return psycopg2.connect(database_url, cursor_factory=RealDictCursor)
-        else:
-            return psycopg2.connect(
-                host=DB_HOST,
-                user=DB_USER,
-                password=DB_PASSWORD,
-                database=DB_NAME,
-                port=DB_PORT,
-                cursor_factory=RealDictCursor
-            )
+        return psycopg2.connect(
+            host=DB_HOST,
+                           user=DB_USER,
+                           password=DB_PASSWORD,
+                           database=DB_NAME,
+            port=DB_PORT,
+            cursor_factory=RealDictCursor
+        )
     except Exception as e:
         print(f"Database connection failed: {e}")
         return None
@@ -121,8 +128,8 @@ def register():
                         """, (student_id, course_code, datetime.now()))
                     
                     connection.commit()
-                    connection.close()
-                    
+            connection.close()
+
                     # Store success data in session
                     session['registration_success'] = {
                         'student_id': student_id,
