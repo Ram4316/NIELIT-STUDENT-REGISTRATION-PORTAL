@@ -128,8 +128,8 @@ def register():
                         """, (student_id, course_code, datetime.now()))
                     
                     connection.commit()
-            connection.close()
-
+                    connection.close()
+                    
                     # Store success data in session
                     session['registration_success'] = {
                         'student_id': student_id,
