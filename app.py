@@ -1,26 +1,44 @@
 from flask import Flask, render_template, request, redirect, url_for, flash, session
-import pymysql.cursors
 import os
+import psycopg2
+from psycopg2.extras import RealDictCursor
 from datetime import datetime
 import re
 
 app = Flask(__name__)
-app.secret_key = 'nielit_student_portal_secret_key_2024'
+app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-here')
 
-# Get database config from environment variables
+# Database configuration for PostgreSQL
 DB_HOST = os.environ.get('DB_HOST', 'localhost')
-DB_USER = os.environ.get('DB_USER', 'root')
+DB_USER = os.environ.get('DB_USER', 'postgres')
 DB_PASSWORD = os.environ.get('DB_PASSWORD', '')
 DB_NAME = os.environ.get('DB_NAME', 'nielit_portal')
-CLOUDFRONT_URL = os.environ.get('CLOUDFRONT_URL', '')  # For static files
+DB_PORT = os.environ.get('DB_PORT', '5432')
+
+# Demo courses data (fallback when database is not available)
+DEMO_COURSES = [
+    {'course_id': 1, 'course_code': 'CCC', 'title': 'Course on Computer Concepts', 'description': 'Basic computer literacy course', 'duration_months': 3, 'fee': 5000, 'is_active': 1},
+    {'course_id': 2, 'course_code': 'O Level', 'title': 'O Level Programming', 'description': 'Programming fundamentals', 'duration_months': 6, 'fee': 12000, 'is_active': 1},
+    {'course_id': 3, 'course_code': 'A Level', 'title': 'A Level Programming', 'description': 'Advanced programming concepts', 'duration_months': 12, 'fee': 25000, 'is_active': 1},
+    {'course_id': 4, 'course_code': 'BCC', 'title': 'Basic Computer Course', 'description': 'Introduction to computers', 'duration_months': 2, 'fee': 3000, 'is_active': 1},
+    {'course_id': 5, 'course_code': 'DCA', 'title': 'Diploma in Computer Applications', 'description': 'Comprehensive computer applications', 'duration_months': 6, 'fee': 15000, 'is_active': 1},
+    {'course_id': 6, 'course_code': 'PGDCA', 'title': 'Post Graduate Diploma in Computer Applications', 'description': 'Advanced computer applications', 'duration_months': 12, 'fee': 30000, 'is_active': 1},
+    {'course_id': 7, 'course_code': 'DTP', 'title': 'Desktop Publishing', 'description': 'Design and publishing software', 'duration_months': 3, 'fee': 8000, 'is_active': 1},
+    {'course_id': 8, 'course_code': 'TALLY', 'title': 'Tally ERP 9', 'description': 'Accounting software training', 'duration_months': 2, 'fee': 6000, 'is_active': 1},
+    {'course_id': 9, 'course_code': 'WEB', 'title': 'Web Development', 'description': 'HTML, CSS, JavaScript, PHP', 'duration_months': 6, 'fee': 18000, 'is_active': 1},
+    {'course_id': 10, 'course_code': 'PYTHON', 'title': 'Python Programming', 'description': 'Python programming language', 'duration_months': 4, 'fee': 12000, 'is_active': 1}
+]
 
 def get_db_connection():
     try:
-        return pymysql.connect(host=DB_HOST,
-                               user=DB_USER,
-                               password=DB_PASSWORD,
-                               database=DB_NAME,
-                               cursorclass=pymysql.cursors.DictCursor)
+        return psycopg2.connect(
+            host=DB_HOST,
+            user=DB_USER,
+            password=DB_PASSWORD,
+            database=DB_NAME,
+            port=DB_PORT,
+            cursor_factory=RealDictCursor
+        )
     except Exception as e:
         print(f"Database connection failed: {e}")
         return None
@@ -35,21 +53,7 @@ def validate_phone(phone):
 
 @app.route('/')
 def index():
-    return render_template('index.html', cloudfront_url=CLOUDFRONT_URL)
-
-# Demo courses data for when database is not available
-DEMO_COURSES = [
-    {'course_id': 1, 'course_code': 'CCC', 'title': 'Course on Computer Concepts', 'description': 'Basic computer literacy course covering fundamentals of computing, internet, and digital literacy', 'duration_months': 3, 'fee': 500.00},
-    {'course_id': 2, 'course_code': 'O-Level', 'title': 'O-Level Programming', 'description': 'Foundation course in programming covering C, C++, and basic algorithms', 'duration_months': 6, 'fee': 1200.00},
-    {'course_id': 3, 'course_code': 'A-Level', 'title': 'A-Level Advanced Programming', 'description': 'Advanced programming course covering data structures, algorithms, and software engineering', 'duration_months': 12, 'fee': 2500.00},
-    {'course_id': 4, 'course_code': 'BCC', 'title': 'Basic Computer Course', 'description': 'Entry-level course for computer beginners covering basic operations and applications', 'duration_months': 2, 'fee': 300.00},
-    {'course_id': 5, 'course_code': 'DTP', 'title': 'Desktop Publishing', 'description': 'Course on document design and layout using various publishing software', 'duration_months': 3, 'fee': 800.00},
-    {'course_id': 6, 'course_code': 'TALLY', 'title': 'Tally ERP 9', 'description': 'Accounting software training for business and financial management', 'duration_months': 2, 'fee': 600.00},
-    {'course_id': 7, 'course_code': 'WEB-DESIGN', 'title': 'Web Design & Development', 'description': 'Complete web development course covering HTML, CSS, JavaScript, and PHP', 'duration_months': 8, 'fee': 1800.00},
-    {'course_id': 8, 'course_code': 'DCA', 'title': 'Diploma in Computer Applications', 'description': 'Comprehensive diploma course covering multiple computer applications', 'duration_months': 6, 'fee': 1500.00},
-    {'course_id': 9, 'course_code': 'PGDCA', 'title': 'Post Graduate Diploma in Computer Applications', 'description': 'Advanced diploma for graduates covering advanced computer concepts and programming', 'duration_months': 12, 'fee': 3000.00},
-    {'course_id': 10, 'course_code': 'ADCA', 'title': 'Advanced Diploma in Computer Applications', 'description': 'Advanced course covering networking, database management, and system administration', 'duration_months': 18, 'fee': 4500.00}
-]
+    return render_template('index.html')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -59,109 +63,96 @@ def register():
         email = request.form.get('email', '').strip()
         phone = request.form.get('phone', '').strip()
         dob = request.form.get('dob', '')
-        qualification = request.form.get('qualification', '')
-        highest_qualification = request.form.get('highest_qualification', '')
-        selected_courses = request.form.getlist('courses')
+        qualification = request.form.get('qualification', '').strip()
+        highest_qualification = request.form.get('highest_qualification', '').strip()
         address = request.form.get('address', '').strip()
+        selected_courses = request.form.getlist('courses')
         
         # Validation
         errors = []
-        
-        if not name or len(name) < 2:
-            errors.append('Name must be at least 2 characters long')
-        
-        if not validate_email(email):
-            errors.append('Please enter a valid email address')
-        
-        if not validate_phone(phone):
-            errors.append('Please enter a valid 10-digit mobile number')
-        
+        if not name:
+            errors.append('Name is required')
+        if not email:
+            errors.append('Email is required')
+        elif not validate_email(email):
+            errors.append('Invalid email format')
+        if not phone:
+            errors.append('Phone number is required')
+        elif not validate_phone(phone):
+            errors.append('Invalid phone number (10 digits starting with 6-9)')
         if not dob:
             errors.append('Date of birth is required')
-        
         if not qualification:
-            errors.append('Current qualification is required')
-        
+            errors.append('Qualification is required')
         if not highest_qualification:
             errors.append('Highest qualification is required')
-        
         if not selected_courses:
             errors.append('Please select at least one course')
         
-        if not address or len(address) < 10:
-            errors.append('Address must be at least 10 characters long')
-        
         if errors:
-            # Get available courses for form
-            connection = get_db_connection()
-            if connection:
-                try:
-                    with connection.cursor() as cursor:
-                        sql = "SELECT * FROM courses WHERE is_active = 1"
-                        cursor.execute(sql)
-                        courses = cursor.fetchall()
-                    connection.close()
-                except Exception as e:
-                    courses = DEMO_COURSES
-                    flash('Using demo data. Database connection error.', 'warning')
-            else:
-                courses = DEMO_COURSES
-                flash('Using demo data. Database not available.', 'info')
-            
-            return render_template('register.html', 
-                                 courses=courses, 
-                                 errors=errors,
-                                 form_data=request.form,
-                                 cloudfront_url=CLOUDFRONT_URL)
+            for error in errors:
+                flash(error, 'error')
+            return redirect(url_for('register'))
         
-        # Save to database or demo mode
+        # Try to save to database
         connection = get_db_connection()
         if connection:
             try:
                 with connection.cursor() as cursor:
-                    # Insert student record
-                    sql = """INSERT INTO students (name, email, phone, dob, qualification, 
-                             highest_qualification, address, registration_date) 
-                             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"""
-                    cursor.execute(sql, (name, email, phone, dob, qualification, 
-                                       highest_qualification, address, datetime.now()))
+                    # Insert student
+                    cursor.execute("""
+                        INSERT INTO students (name, email, phone, dob, qualification, highest_qualification, address, registration_date)
+                        VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                        RETURNING student_id
+                    """, (name, email, phone, dob, qualification, highest_qualification, address, datetime.now()))
                     
-                    student_id = cursor.lastrowid
+                    student_id = cursor.fetchone()['student_id']
                     
-                    # Insert course selections
+                    # Insert student courses
                     for course_id in selected_courses:
-                        sql = "INSERT INTO student_courses (student_id, course_id) VALUES (%s, %s)"
-                        cursor.execute(sql, (student_id, course_id))
+                        cursor.execute("""
+                            INSERT INTO student_courses (student_id, course_id, enrollment_date)
+                            VALUES (%s, %s, %s)
+                        """, (student_id, course_id, datetime.now()))
                     
                     connection.commit()
                     connection.close()
                     
                     # Store success data in session
                     session['registration_success'] = {
+                        'student_id': student_id,
                         'name': name,
                         'email': email,
-                        'student_id': student_id,
-                        'courses': selected_courses
+                        'phone': phone,
+                        'dob': dob,
+                        'qualification': qualification,
+                        'highest_qualification': highest_qualification,
+                        'address': address,
+                        'courses': selected_courses,
+                        'registration_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     }
                     
+                    flash('Registration successful!', 'success')
                     return redirect(url_for('success'))
                     
             except Exception as e:
-                flash('Registration failed. Please try again.', 'error')
-                courses = DEMO_COURSES
-                return render_template('register.html', 
-                                     courses=courses, 
-                                     errors=['Database error occurred. Please try again.'],
-                                     form_data=request.form,
-                                     cloudfront_url=CLOUDFRONT_URL)
+                connection.rollback()
+                connection.close()
+                flash(f'Database error: {str(e)}', 'error')
+                return redirect(url_for('register'))
         else:
             # Demo mode - simulate successful registration
-            student_id = 1000 + len(selected_courses)  # Generate demo student ID
             session['registration_success'] = {
+                'student_id': 12345,  # Demo ID
                 'name': name,
                 'email': email,
-                'student_id': student_id,
-                'courses': selected_courses
+                'phone': phone,
+                'dob': dob,
+                'qualification': qualification,
+                'highest_qualification': highest_qualification,
+                'address': address,
+                'courses': selected_courses,
+                'registration_date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             }
             flash('Demo mode: Registration simulated successfully!', 'info')
             return redirect(url_for('success'))
@@ -171,8 +162,7 @@ def register():
     if connection:
         try:
             with connection.cursor() as cursor:
-                sql = "SELECT * FROM courses WHERE is_active = 1"
-                cursor.execute(sql)
+                cursor.execute("SELECT * FROM courses WHERE is_active = true")
                 courses = cursor.fetchall()
                 connection.close()
         except Exception as e:
@@ -182,7 +172,7 @@ def register():
         courses = DEMO_COURSES
         flash('Using demo data. Database not available.', 'info')
     
-    return render_template('register.html', courses=courses, cloudfront_url=CLOUDFRONT_URL)
+    return render_template('register.html', courses=courses)
 
 @app.route('/success')
 def success():
@@ -199,25 +189,21 @@ def success():
                 course_ids = success_data['courses']
                 if course_ids:
                     placeholders = ','.join(['%s'] * len(course_ids))
-                    sql = f"SELECT * FROM courses WHERE course_id IN ({placeholders})"
-                    cursor.execute(sql, course_ids)
+                    cursor.execute(f"SELECT * FROM courses WHERE course_id IN ({placeholders})", course_ids)
                     courses = cursor.fetchall()
                 else:
                     courses = []
-            connection.close()
+                connection.close()
         except Exception as e:
-            # Use demo data for selected courses
-            course_ids = success_data['courses']
-            courses = [course for course in DEMO_COURSES if str(course['course_id']) in course_ids]
+            # Fallback to demo courses
+            courses = [course for course in DEMO_COURSES if str(course['course_id']) in success_data['courses']]
     else:
-        # Use demo data for selected courses
-        course_ids = success_data['courses']
-        courses = [course for course in DEMO_COURSES if str(course['course_id']) in course_ids]
+        # Demo mode
+        courses = [course for course in DEMO_COURSES if str(course['course_id']) in success_data['courses']]
     
-    return render_template('success.html', 
-                         student_data=success_data, 
-                           courses=courses,
-                           cloudfront_url=CLOUDFRONT_URL)
+    return render_template('success.html',
+                         student_data=success_data,
+                         courses=courses)
 
 @app.route('/courses')
 def courses():
@@ -225,10 +211,9 @@ def courses():
     if connection:
         try:
             with connection.cursor() as cursor:
-                sql = "SELECT * FROM courses WHERE is_active = 1"
-                cursor.execute(sql)
+                cursor.execute("SELECT * FROM courses WHERE is_active = true ORDER BY course_code")
                 courses = cursor.fetchall()
-            connection.close()
+                connection.close()
         except Exception as e:
             courses = DEMO_COURSES
             flash('Using demo data. Database connection error.', 'warning')
@@ -236,7 +221,7 @@ def courses():
         courses = DEMO_COURSES
         flash('Using demo data. Database not available.', 'info')
     
-    return render_template('courses.html', courses=courses, cloudfront_url=CLOUDFRONT_URL)
+    return render_template('courses.html', courses=courses)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(debug=True, host='0.0.0.0', port=int(os.environ.get('PORT', 5000)))
